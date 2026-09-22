@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#2563eb" />
+<title>FixNow — เรียกช่างซ่อมถึงบ้าน</title>
+<!-- FIX #10: โหลดฟอนต์ที่ CSS อ้างถึงจริง -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="stage">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="phone-screen">
+
+      <!-- ============ AUTH SCREEN ============ -->
+      <div class="auth" id="authScreen">
+        <div class="auth-card">
+          <div class="brand">
+            <div class="brand-logo">🔧</div>
+            <div>
+              <h1>FixNow</h1>
+              <p class="muted">เรียกช่างซ่อมถึงบ้าน ภายใน 2 ชั่วโมง</p>
+            </div>
+          </div>
+
+          <div class="seg" id="authTabs">
+            <button type="button" class="seg-btn active" data-auth="login">เข้าสู่ระบบ</button>
+            <button type="button" class="seg-btn" data-auth="signup">สมัครสมาชิก</button>
+          </div>
+
+          <!-- LOGIN -->
+          <form class="auth-form" id="loginForm" novalidate>
+            <label class="field">
+              <span>อีเมล หรือ เบอร์โทร</span>
+              <input type="text" id="loginId" placeholder="you@example.com" autocomplete="username" />
+            </label>
+            <label class="field">
+              <span>รหัสผ่าน</span>
+              <input type="password" id="loginPw" placeholder="••••••••" autocomplete="current-password" />
+            </label>
+            <div class="row-between">
+              <button type="button" class="link" id="forgotBtn">ลืมรหัสผ่าน?</button>
+            </div>
+            <p class="err" id="loginErr" role="alert"></p>
+            <button class="btn btn-primary btn-block" type="submit">เข้าสู่ระบบ</button>
+            <button class="btn btn-ghost btn-block" type="button" id="demoBtn">ลองใช้บัญชีทดลอง (Demo)</button>
+          </form>
+
+          <!-- SIGN UP -->
+          <form class="auth-form" id="signupForm" novalidate hidden>
+            <label class="field">
+              <span>ชื่อ–นามสกุล</span>
+              <input type="text" id="suName" placeholder="สมชาย ใจดี" autocomplete="name" />
+            </label>
+            <div class="grid-2">
+              <label class="field">
+                <span>อีเมล</span>
+                <input type="email" id="suEmail" placeholder="you@example.com" autocomplete="email" />
+              </label>
+              <label class="field">
+                <span>เบอร์โทร</span>
+                <input type="tel" id="suPhone" placeholder="08x-xxx-xxxx" autocomplete="tel" />
+              </label>
+            </div>
+            <div class="grid-2">
+              <label class="field">
+                <span>รหัสผ่าน</span>
+                <input type="password" id="suPw" placeholder="อย่างน้อย 6 ตัวอักษร" autocomplete="new-password" />
+              </label>
+              <label class="field">
+                <span>ยืนยันรหัสผ่าน</span>
+                <input type="password" id="suPw2" placeholder="••••••••" autocomplete="new-password" />
+              </label>
+            </div>
+
+            <div class="field">
+              <span class="lbl-row">
+                ประเภทบัญชี
+                <button class="info" type="button"
+                  data-tip="บัญชีผู้ใช้ = เรียกช่างมาซ่อมที่บ้าน / บัญชีช่าง = รับงานซ่อมและเข้าร่วม Partner Program"
+                  aria-label="ข้อมูลเพิ่มเติม">i</button>
+              </span>
+              <div class="chips" id="roleChips">
+                <button type="button" class="chip active" data-role="customer">👤 ผู้ใช้</button>
+                <button type="button" class="chip" data-role="tech">🧰 ช่าง</button>
+              </div>
+            </div>
+
+            <label class="check"><input type="checkbox" id="suAgree" /> <span>ยอมรับเงื่อนไขการใช้งานและนโยบายความเป็นส่วนตัว</span></label>
+            <p class="err" id="suErr" role="alert"></p>
+            <button class="btn btn-primary btn-block" type="submit">สร้างบัญชี</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ============ APP ============ -->
+      <div class="app" id="appScreen" hidden>
+
+        <header class="topbar">
+          <div class="brand sm">
+            <div class="brand-logo sm">🔧</div>
+            <strong>FixNow</strong>
+          </div>
+          <div class="topbar-right">
+            <div class="seg sm" id="modeSwitch">
+              <button type="button" class="seg-btn active" data-mode="customer">ผู้ใช้</button>
+              <button type="button" class="seg-btn" data-mode="tech">ช่าง</button>
+            </div>
+            <button type="button" class="avatar" id="userChip" title="บัญชีของฉัน">U</button>
+            <button type="button" class="btn btn-ghost sm" id="logoutBtn">ออกจากระบบ</button>
+          </div>
+        </header>
+
+        <main class="main" id="mainScroll">
+
+          <!-- ===== HOME ===== -->
+          <section class="view active" id="view-home">
+            <div class="hero">
+              <div>
+                <p class="muted sm">สวัสดี 👋</p>
+                <h2 id="helloName">ผู้ใช้</h2>
+              </div>
+              <div class="hero-points">
+                <span class="lbl-row muted sm">
+                  แต้มสะสม
+                  <button class="info light" type="button"
+                    data-tip="ทุกการใช้จ่าย 20 บาท = 1 แต้ม นำไปแลกส่วนลดหรือบริการล้างแอร์ฟรีได้"
+                    aria-label="ข้อมูลเพิ่มเติม">i</button>
+                </span>
+                <strong id="homePoints">0</strong>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <h3>บริการยอดนิยม</h3>
+                <span class="badge">
+                  รับประกัน 30 วัน
+                  <button class="info" type="button"
+                    data-tip="งานซ่อมทุกชิ้นรับประกัน 30 วัน หากอาการเดิมกลับมา ช่างกลับไปแก้ให้ฟรี"
+                    aria-label="ข้อมูลเพิ่มเติม">i</button>
+                </span>
+              </div>
+              <div class="service-grid" id="serviceGrid"></div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <h3>ตารางเปรียบเทียบราคา</h3>
+                <button class="info" type="button"
+                  data-tip="ราคาเริ่มต้นคือค่าแรง 1 ชั่วโมง ยังไม่รวมค่าอะไหล่ และจะคูณเพิ่มตามระดับความรุนแรงของงาน"
+                  aria-label="ข้อมูลเพิ่มเติม">i</button>
+              </div>
+              <div class="table-wrap">
+                <table class="tbl">
+                  <thead>
+                    <tr><th>บริการ</th><th>เล็กน้อย</th><th>ปานกลาง</th><th>รุนแรง</th></tr>
+                  </thead>
+                  <tbody id="priceTable"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card plus">
+              <div class="card-head">
+                <h3>FixNow+ สมาชิกรายเดือน</h3>
+                <button class="info light" type="button"
+                  data-tip="สมาชิก FixNow+ : ฟรีค่าตรวจเช็คหน้างาน 250 บาท และรับส่วนลดสมาชิก 10% ทุกบิล"
+                  aria-label="ข้อมูลเพิ่มเติม">i</button>
+              </div>
+              <ul class="ticks">
+                <li>ฟรีค่าตรวจเช็คหน้างาน (ปกติ 250 บาท)</li>
+                <li>ส่วนลดสมาชิก 10% ทุกงานซ่อม</li>
+                <li>คิวจองก่อนใคร ในช่วงงานแน่น</li>
+              </ul>
+              <button type="button" class="btn btn-primary" id="togglePlus">เปิดใช้งาน FixNow+</button>
+            </div>
+          </section>
+
+          <!-- ===== BOOK ===== -->
+          <section class="view" id="view-book">
+            <h2 class="view-title">จองช่าง</h2>
+
+            <div class="card">
+              <div class="lbl-row"><h3>1. เลือกบริการ</h3></div>
+              <div class="chips wrap" id="jobChips"></div>
+            </div>
+
+            <div class="card">
+              <div class="lbl-row">
+                <h3>2. ระดับความรุนแรง</h3>
+                <button class="info" type="button"
+                  data-tip="ระดับความรุนแรง คือ คุณคิดว่าของชิ้นนี้เสียหายขนาดไหน — เล็กน้อย x1.0 / ปานกลาง x1.45 / รุนแรง x2.0 ตัวคูณนี้จะคูณกับค่าแรง"
+                  aria-label="ข้อมูลเพิ่มเติม">i</button>
+              </div>
+              <div class="chips wrap" id="sevChips"></div>
+
+              <div class="grid-2 mt">
+                <label class="field">
+                  <span class="lbl-row">
+                    ชั่วโมงที่คาดว่าใช้
+                    <button class="info" type="button"
+                      data-tip="ประเมินเวลาทำงานของช่าง คิดขั้นต่ำ 1 ชั่วโมง หากหน้างานใช้เวลาน้อยกว่า ระบบจะคืนส่วนต่างให้"
+                      aria-label="ข้อมูลเพิ่มเติม">i</button>
+                  </span>
+                  <input type="number" id="hours" value="1" min="1" max="8" step="0.5" inputmode="decimal" />
+                </label>
+                <label class="field">
+                  <span class="lbl-row">
+                    ค่าอะไหล่ (บาท)
+                    <button class="info" type="button"
+                      data-tip="ค่าอะไหล่ที่คาดว่าต้องเปลี่ยน เช่น คอมเพรสเซอร์ ลูกลอย หลอดไฟ ราคาจริงยืนยันอีกครั้งหน้างาน"
+                      aria-label="ข้อมูลเพิ่มเติม">i</button>
+                  </span>
+                  <input type="number" id="parts" value="0" min="0" step="50" inputmode="numeric" />
+                </label>
+              </div>
+
+              <div class="opts mt">
+                <label class="check">
+                  <input type="checkbox" id="urgent" />
+                  <span class="lbl-row">งานเร่งด่วน ภายใน 2 ชม. (+20%)
+                    <button class="info" type="button"
+                      data-tip="ช่างจะตัดคิวเข้าหางานของคุณภายใน 2 ชั่วโมง คิดค่าบริการเพิ่ม 20% ของค่าแรง+ค่าอะไหล่"
+                      aria-label="ข้อมูลเพิ่มเติม">i</button>
+                  </span>
+                </label>
+                <label class="check">
+                  <input type="checkbox" id="afterHours" />
+                  <span class="lbl-row">นอกเวลาทำการ 20:00–07:00 (+30%)
+                    <button class="info" type="button"
+                      data-tip="งานที่นัดหมายช่วง 20:00–07:00 หรือวันหยุดนักขัตฤกษ์ คิดค่าบริการนอกเวลาเพิ่ม 30%"
+                      aria-label="ข้อมูลเพิ่มเติม">i</button>
+                  </span>
+                </label>
+              </div>
+
+              <label class="field mt">
+                <span>รายละเอียดอาการเสีย</span>
+                <textarea id="desc" rows="3" placeholder="เช่น แอร์ไม่เย็น มีน้ำหยดจากคอยล์เย็น ใช้งานมา 5 ปี"></textarea>
+              </label>
+            </div>
+
+            <div class="card quote">
+              <div class="lbl-row"><h3>3. สรุปราคา</h3></div>
+              <ul class="quote-list" id="quoteList"></ul>
+              <div class="quote-total">
+                <span>ยอดรวมโดยประมาณ</span>
+                <strong id="quoteTotal">฿0</strong>
+              </div>
+              <p class="muted sm" id="quotePoints">รับ 0 แต้ม</p>
+              <button type="button" class="btn btn-primary btn-block" id="confirmBtn">ยืนยันการจอง</button>
+            </div>
+          </section>
+
+          <!-- ===== TRACK ===== -->
+          <section class="view" id="view-track">
+            <h2 class="view-title">ติดตามงาน</h2>
+            <div class="card">
+              <div class="card-head">
+                <h3 id="trackJob">ยังไม่มีงานที่กำลังดำเนินการ</h3>
+                <span class="badge" id="trackCode">—</span>
+              </div>
+              <ol class="steps" id="trackSteps"></ol>
+              <div class="tech-row" id="trackTech"></div>
+            </div>
+          </section>
+
+          <!-- ===== REVIEW ===== -->
+          <section class="view" id="view-review">
+            <h2 class="view-title">รีวิวช่าง</h2>
+            <div class="card">
+              <div class="lbl-row">
+                <h3>ให้คะแนนงานล่าสุด</h3>
+                <button class="info" type="button"
+                  data-tip="คะแนนรีวิวมีผลต่อระดับ Tier ของช่าง ช่างที่ได้ต่ำกว่า 4.0 ติดกัน 3 งานจะถูกทบทวนสถานะ"
+                  aria-label="ข้อมูลเพิ่มเติม">i</button>
+              </div>
+              <div class="stars" id="stars"></div>
+              <textarea id="reviewText" rows="3" placeholder="เล่าประสบการณ์ของคุณ..."></textarea>
+              <button type="button" class="btn btn-primary" id="sendReview">ส่งรีวิว</button>
+            </div>
+            <div class="card">
+              <h3>ช่างยอดนิยม</h3>
+              <div id="techList"></div>
+            </div>
+          </section>
+
+          <!-- ===== REWARDS ===== -->
+          <section class="view" id="view-rewards">
+            <h2 class="view-title">รางวัลของฉัน</h2>
+            <div class="card points-card">
+              <span class="lbl-row muted sm">แต้มคงเหลือ
+                <button class="info light" type="button"
+                  data-tip="แต้มมีอายุ 12 เดือนนับจากวันที่ได้รับ และใช้ได้เฉพาะกับงานซ่อมในแอปเท่านั้น"
+                  aria-label="ข้อมูลเพิ่มเติม">i</button>
+              </span>
+              <strong id="rewardPoints">0</strong>
+            </div>
+            <div class="card">
+              <h3>แลกของรางวัล</h3>
+              <div id="rewardList"></div>
+            </div>
+          </section>
+
+          <!-- ===== TECH: MY JOBS ===== -->
+          <section class="view" id="view-jobs">
+            <h2 class="view-title">งานของฉัน</h2>
+            <div class="card">
+              <div class="card-head">
+                <h3>งานเข้าใหม่</h3>
+                <button class="info" type="button"
+                  data-tip="รายได้สุทธิ = ยอดงาน − ค่าธรรมเนียมแพลตฟอร์มตามระดับ Tier ของคุณ (5–10%)"
+                  aria-label="ข้อมูลเพิ่มเติม">i</button>
+              </div>
+              <div id="incomingJobs"></div>
+            </div>
+            <div class="card">
+              <h3>งานที่รับแล้ว</h3>
+              <div id="myJobs"></div>
+            </div>
+          </section>
+
+          <!-- ===== TECH: PARTNER ===== -->
+          <section class="view" id="view-partner">
+            <h2 class="view-title">Partner Program</h2>
+            <div class="card">
+              <div class="card-head">
+                <h3>ระดับของคุณ</h3>
+                <button class="info" type="button"
+                  data-tip="Tier คำนวณจากจำนวนงานที่ทำสำเร็จในเดือนนั้น: Bronze 0+ (fee 10%), Silver 20+ (8%), Gold 40+ (6%), Platinum 70+ (5%)"
+                  aria-label="ข้อมูลเพิ่มเติม">i</button>
+              </div>
+              <div class="tier-head">
+                <strong id="tierName">Bronze</strong>
+                <span class="muted sm" id="tierFee">ค่าธรรมเนียม 10%</span>
+              </div>
+              <div class="bar"><div class="bar-fill" id="tierBar"></div></div>
+              <p class="muted sm" id="tierHint"></p>
+              <div class="table-wrap mt">
+                <table class="tbl">
+                  <thead><tr><th>ระดับ</th><th>งาน/เดือน</th><th>ค่าธรรมเนียม</th><th>โบนัส</th></tr></thead>
+                  <tbody id="tierTable"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card">
+              <h3>ภารกิจโบนัส</h3>
+              <ul class="ticks" id="missions"></ul>
+            </div>
+          </section>
+
+        </main>
+
+        <nav class="tabbar" id="tabbar"></nav>
+      </div>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </div>
+    <div class="home-bar"></div>
+  </div>
+</div>
+
+<noscript><p style="color:#fff;text-align:center">กรุณาเปิดใช้งาน JavaScript เพื่อใช้ FixNow</p></noscript>
+<script defer src="./app.js"></script>
+</body>
+</html>
