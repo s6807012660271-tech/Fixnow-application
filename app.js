@@ -49,7 +49,7 @@ const SERVICES = [
 const SEVERITY = [
   { id:'minor',    name:'เล็กน้อย', mult:1.0  },
   { id:'moderate', name:'ปานกลาง', mult:1.30 },
-  { id:'severe',   name:'รุนแรง',  mult:1.60  },
+  { id:'severe',   name:'รุนแรง',  mult:1.50  },
 ];
 const FEES  = { inspection:200, urgent:.15, afterHours:.20, memberDiscount:.10, pointsPerBaht:20 };
 const TECHS = [
