@@ -64,9 +64,9 @@ const REWARDS = [
 ];
 const TIERS = [
   { name:'Bronze',   min:0,  fee:10, bonus:'—' },
-  { name:'Silver',   min:20, fee:8,  bonus:'฿500 / เดือน' },
-  { name:'Gold',     min:40, fee:6,  bonus:'฿1,500 / เดือน' },
-  { name:'Platinum', min:70, fee:5,  bonus:'฿3,500 + ประกันอุบัติเหตุ' },
+  { name:'Silver',   min:200, fee:8,  bonus:'฿400 / ปี' },
+  { name:'Gold',     min:500, fee:6,  bonus:'฿1,500 / ปี' },
+  { name:'Platinum', min:1000, fee:5,  bonus:'฿3,500 / ปี + ประกันอุบัติเหตุ' },
 ];
 const TRACK_STEPS = ['ช่างรับงาน','ช่างกำลังเดินทาง','ตรวจเช็ค / ประเมินราคา','กำลังซ่อม','ปิดงาน / ชำระเงิน'];
 const TABS = {
