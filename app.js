@@ -166,7 +166,7 @@ function initAuthUI(){
   on('#loginForm',  'submit', handleLogin);
   on('#signupForm', 'submit', handleSignup);
   on('#demoBtn',    'click',  () => login(
-    { name:'คุณสมชาย', email:'demo@fixnow.app', phone:'0812345678', role:'customer' }, false));
+    { name:'คุณ DEMO', email:'demo@fixnow.app', phone:'0812345678', role:'customer' }, false));
   on('#forgotBtn',  'click',  () => toast('ส่งลิงก์รีเซ็ตรหัสผ่านไปที่อีเมลแล้ว (เดโม)'));
 }
 
