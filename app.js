@@ -583,3 +583,459 @@ function boot(){
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
 else boot();
+
+/* ============================================================
+   FixNow — Profile menu + TH/EN language switch
+   ============================================================ */
+(function () {
+  'use strict';
+  if (window.__fixnowI18n) return;
+  window.__fixnowI18n = true;
+
+  var LANG_KEY = 'fixnow_lang';
+  var lang = 'th';
+  try { lang = localStorage.getItem(LANG_KEY) === 'en' ? 'en' : 'th'; } catch (e) {}
+
+  /* ---------- 1) พจนานุกรม TH -> EN ---------- */
+  var DICT = {
+    // ---- Auth ----
+    'บริการถึงบ้านภายใน 2 ชั่วโมง': 'On-site service within 2 hours',
+    'เข้าสู่ระบบ': 'Log in',
+    'สมัครสมาชิก': 'Sign up',
+    'อีเมล หรือ เบอร์โทร': 'Email or phone',
+    'รหัสผ่าน': 'Password',
+    'ลืมรหัสผ่าน?': 'Forgot password?',
+    'ลองใช้บัญชีทดลอง (Demo)': 'Try a demo account',
+    'ชื่อ–นามสกุล': 'Full name',
+    'อีเมล': 'Email',
+    'เบอร์โทร': 'Phone',
+    'อย่างน้อย 6 ตัวอักษร': 'At least 6 characters',
+    'ยืนยันรหัสผ่าน': 'Confirm password',
+    'ประเภทบัญชี': 'Account type',
+    'ผู้ใช้': 'Customer',
+    'ช่าง': 'Technician',
+    'ยอมรับเงื่อนไขการใช้งานและนโยบายความเป็นส่วนตัว': 'I accept the Terms of Use and Privacy Policy',
+    'สร้างบัญชี': 'Create account',
+    'สมชาย ใจดี': 'John Smith',
+    'ออกจากระบบ': 'Log out',
+    'บัญชีของฉัน': 'My account',
+    'ข้อมูลเพิ่มเติม': 'More info',
+    'กรุณาเปิดใช้งาน JavaScript เพื่อใช้ FixNow': 'Please enable JavaScript to use FixNow',
+
+    // ---- Home ----
+    'สวัสดี 👋': 'Hello 👋',
+    'แต้มสะสม': 'Points',
+    'บริการยอดนิยม': 'Popular services',
+    'รับประกัน 30 วัน': '30-day warranty',
+    'ตารางเปรียบเทียบราคาค่าบริการ': 'Service price comparison',
+    'บริการ': 'Service',
+    'เล็กน้อย': 'Minor',
+    'ปานกลาง': 'Moderate',
+    'รุนแรง': 'Severe',
+    'FixNow+ สมาชิกรายเดือน': 'FixNow+ Monthly membership',
+    'ฟรีค่าตรวจเช็คหน้างาน (ปกติ 250 บาท)': 'Free on-site inspection (normally 250 THB)',
+    'ส่วนลดสมาชิก 10% ทุกงานซ่อม': '10% member discount on every repair',
+    'คิวจองก่อนใคร ในช่วงงานแน่น': 'Priority booking during busy periods',
+    'เปิดใช้งาน FixNow+': 'Activate FixNow+',
+    '✓ เป็นสมาชิก FixNow+ แล้ว': '✓ FixNow+ member',
+    'เปิดใช้งาน FixNow+ เรียบร้อย': 'FixNow+ activated',
+    'ยกเลิก FixNow+ แล้ว': 'FixNow+ cancelled',
+
+    // ---- Services ----
+    'ตู้เย็น': 'Refrigerator',
+    'แอร์': 'Air conditioner',
+    'เครื่องซักผ้า': 'Washing machine',
+    'ซิงค์/ท่อ': 'Sink / Pipes',
+    'กาต้มน้ำ': 'Kettle',
+    'ทีวี/จอ': 'TV / Monitor',
+    'ไมโครเวฟ': 'Microwave',
+    'พัดลม/ดูดควัน': 'Fan / Range hood',
+    'ไฟฟ้าบ้าน': 'Home electrical',
+
+    // ---- Booking ----
+    'จองช่าง': 'Book',
+    '1. เลือกบริการ': '1. Choose a service',
+    '2. ระดับความรุนแรง': '2. Severity level',
+    'ชั่วโมงที่คาดว่าใช้': 'Estimated hours',
+    'ค่าอะไหล่ (บาท)': 'Parts cost (THB)',
+    'งานเร่งด่วน ภายใน 2 ชม. (+20%)': 'Urgent — within 2 hrs (+20%)',
+    'นอกเวลาทำการ 20:00–07:00 (+30%)': 'After hours 20:00–07:00 (+30%)',
+    'รายละเอียดอาการเสีย': 'Problem description',
+    'เช่น แอร์ไม่เย็น มีน้ำหยดจากคอยล์เย็น ใช้งานมา 5 ปี':
+      'e.g. AC not cooling, water dripping from the coil, 5 years old',
+    '3. สรุปราคา': '3. Price summary',
+    'ยอดรวมโดยประมาณ': 'Estimated total',
+    'ยืนยันการจอง': 'Confirm booking',
+    'ค่าแรง': 'Labour',
+    'ค่าอะไหล่': 'Parts',
+    'ค่าตรวจเช็คหน้างาน (FixNow+ ฟรี)': 'On-site inspection (free with FixNow+)',
+    'ค่าตรวจเช็คหน้างาน': 'On-site inspection fee',
+    'ค่าบริการเร่งด่วน (+20%)': 'Urgent surcharge (+20%)',
+    'ค่าบริการนอกเวลา (+30%)': 'After-hours surcharge (+30%)',
+    'ส่วนลดสมาชิก FixNow+ (10%)': 'FixNow+ member discount (10%)',
+
+    // ---- Track ----
+    'ติดตาม': 'Track',
+    'ติดตามงาน': 'Track job',
+    'ยังไม่มีงานที่กำลังดำเนินการ': 'No job in progress',
+    'กดจองช่างเพื่อเริ่มติดตามงาน': 'Book a technician to start tracking',
+    'ช่างรับงาน': 'Technician accepted',
+    'ช่างกำลังเดินทาง': 'Technician on the way',
+    'ตรวจเช็ค / ประเมินราคา': 'Inspection / quotation',
+    'กำลังซ่อม': 'Repairing',
+    'ปิดงาน / ชำระเงิน': 'Job closed / payment',
+    'อัปเดตสถานะ': 'Update status',
+    'งานเสร็จแล้ว': 'Job completed',
+    'งานนี้เสร็จสมบูรณ์แล้ว ✅ รับประกัน 30 วัน': 'This job is complete ✅ 30-day warranty',
+
+    // ---- Review ----
+    'รีวิว': 'Review',
+    'รีวิวช่าง': 'Rate your technician',
+    'ให้คะแนนงานล่าสุด': 'Rate your latest job',
+    'เล่าประสบการณ์ของคุณ...': 'Tell us about your experience...',
+    'ส่งรีวิว': 'Submit review',
+    'ช่างยอดนิยม': 'Top technicians',
+    'กรุณาให้คะแนนก่อนส่งรีวิว': 'Please give a rating first',
+    'ช่างต้น': 'Tech Ton',
+    'ช่างบอย': 'Tech Boy',
+    'ช่างเอก': 'Tech Ake',
+    'แอร์ / ตู้เย็น': 'AC / Refrigerator',
+    'เครื่องซักผ้า / ไฟฟ้า': 'Washing machine / Electrical',
+    'ประปา / ท่อตัน': 'Plumbing / Clogged pipes',
+
+    // ---- Rewards ----
+    'รางวัล': 'Rewards',
+    'รางวัลของฉัน': 'My rewards',
+    'แต้มคงเหลือ': 'Points balance',
+    'แลกของรางวัล': 'Redeem rewards',
+    'ล้างแอร์ฟรี 1 เครื่อง': 'Free AC cleaning (1 unit)',
+    'ใช้ได้กับงานซ่อมทุกประเภท': 'Valid for all repair types',
+    'แอร์ผนังไม่เกิน 18,000 BTU': 'Wall-type AC up to 18,000 BTU',
+    'แต้มไม่พอสำหรับรางวัลนี้': 'Not enough points for this reward',
+
+    // ---- Tech ----
+    'งานของฉัน': 'My jobs',
+    'งานเข้าใหม่': 'New incoming jobs',
+    'งานที่รับแล้ว': 'Accepted jobs',
+    'รับงาน': 'Accept job',
+    'ยังไม่มีงานเข้าใหม่ในขณะนี้': 'No new jobs right now',
+    'ยังไม่มีงานที่รับ': 'No accepted jobs yet',
+    'ถึงหน้างาน': 'Arrived',
+    'เริ่มซ่อม': 'Start repair',
+    'ปิดงาน': 'Close job',
+    'รอเดินทาง': 'Awaiting travel',
+    'ถึงหน้างานแล้ว': 'Arrived on site',
+    '✅ เสร็จสิ้น': '✅ Completed',
+    'ซ่อมแอร์ไม่เย็น': 'AC not cooling',
+    'เครื่องซักผ้าไม่ปั่น': 'Washer not spinning',
+    'ท่อซิงค์ตัน': 'Clogged sink pipe',
+
+    // ---- Partner ----
+    'ระดับของคุณ': 'Your tier',
+    'ระดับ': 'Tier',
+    'งาน': 'Jobs',
+    'ค่าธรรมเนียม': 'Fee',
+    'โบนัส': 'Bonus',
+    'ภารกิจโบนัส': 'Bonus missions',
+    'คุณอยู่ระดับสูงสุดแล้ว 🏆': "You're at the top tier 🏆",
+    'รับงานครบ 5 งานในสัปดาห์นี้ → โบนัส ฿300': 'Complete 5 jobs this week → ฿300 bonus',
+    'รักษาคะแนนรีวิว 4.8+ ตลอดเดือน → โบนัส ฿500': 'Keep a 4.8+ rating all month → ฿500 bonus',
+    'ตอบรับงานภายใน 3 นาที 20 ครั้ง → ปลดล็อกคิวงานพรีเมียม':
+      'Accept 20 jobs within 3 minutes → unlock premium job queue',
+
+    // ---- Tabs / misc ----
+    'หน้าแรก': 'Home',
+    'คุณ DEMO': 'DEMO User',
+    'บัญชีช่าง': 'Technician account',
+    'บัญชีผู้ใช้': 'Customer account',
+    'ยังไม่ได้เข้าสู่ระบบ': 'Not signed in',
+    'สมัครสมาชิกสำเร็จ 🎉': 'Account created 🎉',
+
+    // ---- Errors ----
+    'กรุณากรอกข้อมูลให้ครบถ้วน': 'Please fill in all fields',
+    'รูปแบบอีเมลไม่ถูกต้อง': 'Invalid email format',
+    'เบอร์โทรไม่ถูกต้อง (ขึ้นต้น 0 และมี 9–10 หลัก)': 'Invalid phone number (must start with 0, 9–10 digits)',
+    'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร': 'Password must be at least 6 characters',
+    'รหัสผ่านทั้งสองช่องไม่ตรงกัน': 'Passwords do not match',
+    'กรุณายอมรับเงื่อนไขการใช้งาน': 'Please accept the Terms of Use',
+    'อีเมลนี้ถูกใช้ไปแล้ว': 'This email is already registered',
+    'เบอร์โทรนี้ถูกใช้ไปแล้ว': 'This phone number is already registered',
+    'อีเมล/เบอร์โทร หรือรหัสผ่านไม่ถูกต้อง': 'Incorrect email/phone or password',
+
+    // ---- Tooltips ----
+    'บัญชีผู้ใช้ = เรียกช่างมาซ่อมที่บ้าน / บัญชีช่าง = รับงานซ่อมและเข้าร่วม Partner Program':
+      'Customer account = book technicians to your home / Technician account = accept jobs and join the Partner Program',
+    'ทุกการใช้จ่าย 20 บาท = 1 แต้ม นำไปแลกส่วนลดหรือบริการล้างแอร์ฟรีได้':
+      'Every 20 THB spent = 1 point, redeemable for discounts or free AC cleaning',
+    'งานซ่อมทุกชิ้นรับประกัน 30 วัน หากอาการเดิมกลับมา ช่างกลับไปแก้ให้ฟรี':
+      'Every repair is covered for 30 days. If the same issue returns, the technician fixes it free.',
+    'ราคาเริ่มต้นคือค่าแรง 1 ชั่วโมง ยังไม่รวมค่าอะไหล่ และจะคูณเพิ่มตามระดับความรุนแรงของงาน':
+      'The starting price is 1 hour of labour, excluding parts, and scales with job severity.',
+    'สมาชิก FixNow+ : ฟรีค่าตรวจเช็คหน้างาน 250 บาท และรับส่วนลดสมาชิก 10% ทุกบิล':
+      'FixNow+ members: free 250 THB on-site inspection and 10% off every bill',
+    "ระดับความรุนแรง คือ คุณคิดว่าของชิ้นนี้เสียหายขนาดไหนถ้าไม่แน่ใจให้เลือก'เล็กน้อย'ทางระบบจะประเมินราคาให้":
+      "Severity means how badly you think the item is damaged. If unsure, pick 'Minor' and the system will estimate for you.",
+    'ประเมินเวลาทำงานของช่าง คิดขั้นต่ำ 1 ชั่วโมง หากหน้างานใช้เวลาน้อยกว่า ระบบจะคืนส่วนต่างให้':
+      'Estimated working time, 1 hour minimum. If the job takes less, the difference is refunded.',
+    'ค่าอะไหล่ที่คาดว่าต้องเปลี่ยน เช่น คอมเพรสเซอร์ ลูกลอย หลอดไฟ ราคาจริงยืนยันอีกครั้งหน้างาน':
+      'Estimated parts cost (compressor, float valve, light bulb, etc.). The final price is confirmed on site.',
+    'ช่างจะตัดคิวเข้าหางานของคุณภายใน 2 ชั่วโมง คิดค่าบริการเพิ่ม 20% ของค่าแรง+ค่าอะไหล่':
+      'A technician jumps the queue to reach you within 2 hours, for +20% of labour + parts.',
+    'งานที่นัดหมายช่วง 20:00–07:00 หรือวันหยุดนักขัตฤกษ์ คิดค่าบริการนอกเวลาเพิ่ม 30%':
+      'Jobs booked between 20:00–07:00 or on public holidays carry a 30% after-hours surcharge.',
+    'คะแนนรีวิวมีผลต่อระดับ Tier ของช่าง ช่างที่ได้ต่ำกว่า 4.0 ติดกัน 3 งานจะถูกทบทวนสถานะ':
+      "Ratings affect a technician's tier. Below 4.0 for 3 jobs in a row triggers a status review.",
+    'แต้มมีอายุ 12 เดือนนับจากวันที่ได้รับ และใช้ได้เฉพาะกับงานซ่อมในแอปเท่านั้น':
+      'Points expire 12 months after they are earned and apply only to in-app repairs.',
+    'รายได้สุทธิ = ยอดงาน − ค่าธรรมเนียมแพลตฟอร์มตามระดับ Tier ของคุณ (5–10%)':
+      'Net income = job total − platform fee based on your tier (5–10%)',
+    'Tier คำนวณจากจำนวนงานที่ทำสำเร็จในเดือนนั้น: Bronze 0+ (fee 10%), Silver 20+ (8%), Gold 40+ (6%), Platinum 70+ (5%)':
+      'Tier is based on jobs completed that month: Bronze 0+ (10% fee), Silver 20+ (8%), Gold 40+ (6%), Platinum 70+ (5%)',
+
+    // ---- Document title ----
+    'FixNow — เรียกช่างซ่อมถึงบ้าน': 'FixNow — On-demand home repair'
+  };
+
+  /* ---------- 2) รูปแบบข้อความที่มีตัวเลขแปรผัน ---------- */
+  var RULES = [
+    { re: /^ค่าแรง\s+([\s\S]+?)\s*\(\s*([\d.,]+)\s*ชม\.?\s*[×xX]\s*([\s\S]+?)\s*[×xX]\s*([\d.]+)\s*\)$/,
+      fn: function (m) {
+        var svc = lookup(m[1].trim()) || m[1].trim();
+        var sev = lookup(m[3].trim()) || m[3].trim();
+        return 'Labour — ' + svc + ' (' + m[2] + ' hr × ' + sev + ' ×' + m[4] + ')';
+      } },
+    { re: /^รับ\s*([\d.,]+)\s*แต้ม\s*เมื่อชำระเงินสำเร็จ$/, en: 'Earn $1 points on successful payment' },
+    { re: /^รับ\s*([\d.,]+)\s*แต้ม$/,                       en: 'Earn $1 points' },
+    { re: /^([\d.,]+)\s*แต้ม$/,                              en: '$1 points' },
+    { re: /^ค่าแรง\s*([\d.,]+)\s*ชม\.?$/,                    en: 'Labour $1 hr' },
+    { re: /^จองสำเร็จ!\s*ได้รับ\s*([\d.,]+)\s*แต้ม$/,        en: 'Booking confirmed! You earned $1 points' },
+    { re: /^ขอบคุณสำหรับรีวิว\s*([\d.]+)\s*ดาว\s*⭐?$/,      en: 'Thanks for your $1-star review ⭐' },
+    { re: /^ค่าธรรมเนียม\s*([\d.]+)%$/,                      en: 'Fee $1%' },
+    { re: /^งานเดือนนี้\s*([\d.,]+)$/,                       en: 'Jobs this month $1' },
+    { re: /^ส่วนลด\s*([\d.,]+)\s*บาท$/,                      en: '$1 THB discount' },
+    { re: /^ขั้นต่ำ\s*([\d.,]+)\s*บาท$/,                     en: 'Minimum $1 THB' },
+    { re: /^฿([\d.,]+)\s*\/\s*ปี\s*\+\s*ประกันอุบัติเหตุ$/,  en: '฿$1 / year + accident insurance' },
+    { re: /^฿([\d.,]+)\s*\/\s*ปี$/,                          en: '฿$1 / year' },
+    { re: /^สถานะ:\s*([\s\S]+)$/,      fn: function (m) { return 'Status: ' + (lookup(m[1].trim()) || m[1].trim()); } },
+    { re: /^รับงาน\s*([\s\S]+?)\s*แล้ว$/, fn: function (m) { return 'Accepted job: ' + (lookup(m[1].trim()) || m[1].trim()); } },
+    { re: /^รับ\s*([\d.,]+)\s*แต้ม\s*เมื่อชำระเงินสำเร็จ$/, en: 'Earn $1 points on successful payment' },
+    { re: /^แลก\s*([\s\S]+?)\s*สำเร็จ\s*🎁?$/, fn: function (m) { return 'Redeemed ' + (lookup(m[1].trim()) || m[1].trim()) + ' 🎁'; } },
+    { re: /^อีก\s*([\d.,]+)\s*งาน\s*เลื่อนเป็น\s*([\s\S]+?)\s*\(ค่าธรรมเนียมเหลือ\s*([\d.]+)%\)$/,
+      fn: function (m) { return m[1] + ' more jobs to reach ' + m[2] + ' (fee drops to ' + m[3] + '%)'; } }
+  ];
+
+  /* ---------- คำแปลเฉพาะจุด (override DICT) ---------- */
+  var SPECIAL = [
+    { sel: '#modeSwitch .seg-btn', map: { 'ผู้ใช้': 'User', 'ช่าง': 'Tech' } }
+  ];
+
+  function specialFor(node) {
+    var el = node.parentElement;
+    if (!el || !el.closest) return null;
+    for (var i = 0; i < SPECIAL.length; i++) {
+      if (el.closest(SPECIAL[i].sel)) return SPECIAL[i].map;
+    }
+    return null;
+  }
+
+  /* ---------- 3) เอนจินแปลภาษา ---------- */
+  var textOrig = new WeakMap();
+  var attrOrig = new WeakMap();
+  var applying = false;
+  var ATTRS = ['placeholder', 'title', 'data-tip', 'aria-label'];
+
+  function core(k) {
+    if (Object.prototype.hasOwnProperty.call(DICT, k)) return DICT[k];
+    for (var i = 0; i < RULES.length; i++) {
+      var m = k.match(RULES[i].re);
+      if (m) return RULES[i].fn ? RULES[i].fn(m) : k.replace(RULES[i].re, RULES[i].en);
+    }
+    return null;
+  }
+
+  function lookup(k) {
+    if (!k) return null;
+    var hit = core(k);
+    if (hit != null) return hit;
+    // ตัด emoji / สัญลักษณ์หัว-ท้ายออกแล้วลองใหม่ เช่น "🧊 ตู้เย็น"
+    var p = k.match(/^([^\u0E00-\u0E7FA-Za-z0-9฿]*)([\s\S]*?)([^\u0E00-\u0E7FA-Za-z0-9฿%)]*)$/);
+    if (p && p[2] && p[2] !== k) {
+      var inner = core(p[2]);
+      if (inner != null) return p[1] + inner + p[3];
+    }
+    return null;
+  }
+
+  function translate(raw) {
+    var m = String(raw).match(/^(\s*)([\s\S]*?)(\s*)$/);
+    if (!m || !m[2]) return null;
+    var out = lookup(m[2]);
+    return out == null ? null : m[1] + out + m[3];
+  }
+
+    function applyText(node) {
+    var cur = node.nodeValue;
+    if (!cur || !cur.trim()) return;
+
+    if (lang === 'en') {
+      var base = textOrig.has(node) ? textOrig.get(node) : cur;
+      var out = null;
+      var sp = specialFor(node);
+      if (sp) {
+        var k = base.trim();
+        if (Object.prototype.hasOwnProperty.call(sp, k)) out = base.replace(k, sp[k]);
+      }
+      if (out == null) out = translate(base);
+      if (out != null && out !== cur) {
+        if (!textOrig.has(node)) textOrig.set(node, cur);
+        node.nodeValue = out;
+      }
+    } else if (textOrig.has(node)) {
+      node.nodeValue = textOrig.get(node);
+      textOrig['delete'](node);
+    }
+  }
+
+  function applyAttrs(el) {
+    for (var i = 0; i < ATTRS.length; i++) {
+      var a = ATTRS[i];
+      if (!el.hasAttribute(a)) continue;
+      var store = attrOrig.get(el) || {};
+      if (lang === 'en') {
+        var base = store[a] != null ? store[a] : el.getAttribute(a);
+        var out = translate(base);
+        if (out != null && out !== el.getAttribute(a)) {
+          if (store[a] == null) { store[a] = el.getAttribute(a); attrOrig.set(el, store); }
+          el.setAttribute(a, out);
+        }
+      } else if (store[a] != null) {
+        el.setAttribute(a, store[a]);
+        store[a] = null;
+      }
+    }
+  }
+
+  function applyAll() {
+    applying = true;
+    try {
+      var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+      var nodes = [], n;
+      while ((n = w.nextNode())) {
+        var p = n.parentNode;
+        if (p && (p.tagName === 'SCRIPT' || p.tagName === 'STYLE')) continue;
+        nodes.push(n);
+      }
+      nodes.forEach(applyText);
+
+      var els = document.body.querySelectorAll('[placeholder],[title],[data-tip],[aria-label]');
+      for (var i = 0; i < els.length; i++) applyAttrs(els[i]);
+
+      document.documentElement.lang = lang;
+      var t = lang === 'en' ? translate(document.title) : null;
+      if (lang === 'en' && t) { if (!window.__docTitleTh) window.__docTitleTh = document.title; document.title = t; }
+      if (lang === 'th' && window.__docTitleTh) document.title = window.__docTitleTh;
+
+      syncMenu();
+    } catch (e) {
+      console.warn('i18n error:', e);
+    }
+    applying = false;
+  }
+
+  /* ---------- 4) เมนูโปรไฟล์ ---------- */
+  var menu, backdrop, chip;
+
+  function buildMenu() {
+    chip = document.getElementById('userChip');
+    if (!chip) return false;
+    var host = document.querySelector('.phone-screen') || document.body;
+
+    backdrop = document.createElement('div');
+    backdrop.className = 'menu-backdrop';
+
+    menu = document.createElement('div');
+    menu.className = 'profile-menu';
+    menu.setAttribute('role', 'menu');
+    menu.innerHTML =
+      '<div class="pm-head">' +
+        '<div class="pm-ava" id="pmAva">U</div>' +
+        '<div class="pm-id"><strong id="pmName">-</strong><span id="pmRole">-</span></div>' +
+      '</div>' +
+      '<div class="pm-sec">' +
+        '<span class="pm-label">ภาษา / Language</span>' +
+        '<div class="pm-lang">' +
+          '<button type="button" class="pm-lang-btn" data-lang="th">ไทย</button>' +
+          '<button type="button" class="pm-lang-btn" data-lang="en">English</button>' +
+        '</div>' +
+      '</div>' +
+      '<button type="button" class="pm-item" id="pmLogout">ออกจากระบบ</button>';
+
+    host.appendChild(backdrop);
+    host.appendChild(menu);
+
+    chip.addEventListener('click', function (e) { e.stopPropagation(); toggleMenu(); });
+    backdrop.addEventListener('click', closeMenu);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMenu(); });
+
+    menu.addEventListener('click', function (e) {
+      var b = e.target.closest('.pm-lang-btn');
+      if (b) { setLang(b.getAttribute('data-lang')); return; }
+      if (e.target.closest('#pmLogout')) {
+        closeMenu();
+        var lo = document.getElementById('logoutBtn');
+        if (lo) lo.click();
+      }
+    });
+    return true;
+  }
+
+  function syncMenu() {
+    if (!menu) return;
+    var name = document.getElementById('helloName');
+    var seg = document.querySelector('#modeSwitch .seg-btn.active');
+    var nm = menu.querySelector('#pmName');
+    var rl = menu.querySelector('#pmRole');
+    var av = menu.querySelector('#pmAva');
+    if (nm) nm.textContent = name ? name.textContent.trim() : '-';
+    if (rl) rl.textContent = seg ? seg.textContent.trim() : '';
+    if (av && chip) av.textContent = (chip.textContent || 'U').trim().charAt(0).toUpperCase();
+    var btns = menu.querySelectorAll('.pm-lang-btn');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].classList.toggle('active', btns[i].getAttribute('data-lang') === lang);
+    }
+  }
+
+  function openMenu()  { syncMenu(); menu.classList.add('open'); backdrop.classList.add('open'); chip.classList.add('menu-open'); }
+  function closeMenu() { if (!menu) return; menu.classList.remove('open'); backdrop.classList.remove('open'); chip.classList.remove('menu-open'); }
+  function toggleMenu(){ menu.classList.contains('open') ? closeMenu() : openMenu(); }
+
+  function setLang(next) {
+    if (next !== 'th' && next !== 'en') return;
+    lang = next;
+    try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+    applyAll();
+    if (typeof window.toast === 'function') {
+      window.toast(lang === 'th' ? 'เปลี่ยนเป็นภาษาไทยแล้ว' : 'Switched to English');
+    }
+  }
+
+  /* ---------- 5) เริ่มทำงาน + เฝ้าดู DOM ที่ render ใหม่ ---------- */
+  function start() {
+    buildMenu();
+    applyAll();
+
+    var pending = false;
+    var obs = new MutationObserver(function () {
+      if (applying || pending) return;
+      pending = true;
+      requestAnimationFrame(function () { pending = false; applyAll(); });
+    });
+    obs.observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { setTimeout(start, 0); });
+  } else {
+    setTimeout(start, 0);
+  }
+})();
