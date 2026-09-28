@@ -696,7 +696,7 @@ else boot();
     'ส่งรีวิว': 'Submit review',
     'ช่างยอดนิยม': 'Top technicians',
     'กรุณาให้คะแนนก่อนส่งรีวิว': 'Please give a rating first',
-    'ช่างต้น': 'Tech Ton',
+    'ช่างต้น': 'Tech Thon',
     'ช่างบอย': 'Tech Boy',
     'ช่างเอก': 'Tech Ake',
     'แอร์ / ตู้เย็น': 'AC / Refrigerator',
