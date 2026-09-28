@@ -593,8 +593,16 @@ else boot();
   window.__fixnowI18n = true;
 
   var LANG_KEY = 'fixnow_lang';
-  var lang = 'th';
-  try { lang = localStorage.getItem(LANG_KEY) === 'en' ? 'en' : 'th'; } catch (e) {}
+  var LANG_MIGRATION_KEY = 'fixnow_lang_default_en_v1';
+  var lang = 'en';
+  try {
+    if (localStorage.getItem(LANG_MIGRATION_KEY) !== '1') {
+      localStorage.setItem(LANG_KEY, 'en');
+      localStorage.setItem(LANG_MIGRATION_KEY, '1');
+    } else {
+      lang = localStorage.getItem(LANG_KEY) === 'th' ? 'th' : 'en';
+    }
+  } catch (e) {}
 
   /* ---------- 1) พจนานุกรม TH -> EN ---------- */
   var DICT = {
